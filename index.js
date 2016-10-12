@@ -5,6 +5,7 @@ var phantomjs = require('phantomjs-prebuilt');
 var binPath = phantomjs.path;
 var imageDiff = require('image-diff');
 var del = require('del');
+var notify = require(process.cwd() + '/lib/notify.js');
 
 /****************************************************************************
  * Merge defaults with custom config
@@ -19,7 +20,7 @@ var defaults = {
   interval : 600000  // in MS,  default to every 10min
 };
 var myconfig = require(process.cwd() + '/config.js');
-var config = Object.assign({}, defaults, myconfig);
+var config = Object.assign({}, defaults, myconfig.screenshotConfig);
 
 if (!config.url) {
   console.error('Missing url');
@@ -158,8 +159,10 @@ function setupInterval(config){
         // hook into notifications here
         if (imagesAreSame) {
           // do positive notification
+          notify.slack("no changes detected on: "  + config.url);
         } else {
           // do negative noticatiom
+          notify.all("@channel - changes detected on " + config.url);
         }
       });
 
