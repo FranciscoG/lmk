@@ -158,10 +158,10 @@ function setupInterval(config){
         console.log('images are the same:', imagesAreSame);
         // hook into notifications here
         if (imagesAreSame) {
-          // do positive notification
+          // no change notification
           notify.slack("no changes detected on: "  + config.url);
         } else {
-          // do negative noticatiom
+          // Changes detected!!
           notify.all("@channel - changes detected on " + config.url);
         }
       });
