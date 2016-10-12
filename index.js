@@ -6,6 +6,7 @@ var binPath = phantomjs.path;
 var imageDiff = require('image-diff');
 var del = require('del');
 var notify = require(process.cwd() + '/lib/notify.js');
+var myconfig = require(process.cwd() + '/config.js');
 
 /****************************************************************************
  * Merge defaults with custom config
@@ -17,12 +18,20 @@ var defaults = {
   outputPath : process.cwd() + '/output/',
   filename : 'compare',
   loadTime : 5000,
-  interval : 600000  // in MS,  default to every 10min
+  interval : 600000,  // in MS,  default to every 10min
+  clip : {
+    left: 0,
+    top: 0,
+    width: 646,
+    height: 900
+  }
 };
-var myconfig = require(process.cwd() + '/config.js');
-var config = Object.assign({}, defaults, myconfig.screenshotConfig);
 
-if (!config.url) {
+// get the url
+var config = defaults;
+config.url  = process.env.PINGURL || myconfig.screenshotConfig.url;
+
+if (!config.url || config.url === '') {
   console.error('Missing url');
   process.exit(1);
 }
