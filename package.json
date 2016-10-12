@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "del": "^2.2.2",
     "image-diff": "^1.6.3",
     "phantomjs-prebuilt": "^2.1.13"
   }
