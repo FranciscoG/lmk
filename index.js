@@ -78,6 +78,10 @@ function setupInterval(config){
       diff.then(function(imagesAreSame){
         console.log('images are the same?', imagesAreSame);
 
+        /*************************************************************************
+         *  This is where you would hook up your notifications
+         */
+
         // if there's not change we just post to slack
         if (imagesAreSame){
           notify.slack("no changes detected on: "  + config.url, null);
@@ -97,6 +101,12 @@ function setupInterval(config){
           .catch(function (err) {
               console.error(err.message);
           });
+
+          /*
+           * End notification area block
+           ************************************************************************/
+
+        main.rotateFiles(config);
       });
 
       diff.catch(function(err){
