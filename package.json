@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "node index.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "del": "^2.2.2",
     "image-diff": "^1.6.3",
+    "imgur": "^0.1.7",
     "phantomjs-prebuilt": "^2.1.13",
     "request": "^2.75.0",
     "superagent": "^2.3.0",

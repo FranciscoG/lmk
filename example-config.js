@@ -1,17 +1,9 @@
 module.exports.screenshotConfig = {
-  width: 1000,
-  height: 900,
-  loadTime : 5000,
-  interval : 30000, // in MS
   url : '', // your url
-  
-  // optional,  you can set region of page to clip
-  clip : {
-    left: 0,
-    top: 0,
-    width: 646,
-    height: 900
-  }
+};
+
+module.exports.imgurConfig = {
+  'clientID' : ''  // register an app at api.imgur.com and get clientID
 };
 
 module.exports.slackConfig = {

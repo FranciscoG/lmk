@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 'use strict';
-var spawn = require('child_process').spawn;
-var phantomjs = require('phantomjs-prebuilt');
-var binPath = phantomjs.path;
-var imageDiff = require('image-diff');
 var del = require('del');
 var notify = require(process.cwd() + '/lib/notify.js');
+var imgur = require(process.cwd() + '/lib/imgur.js');
 var myconfig = require(process.cwd() + '/config.js');
+var main = require(process.cwd() + '/lib/main.js');
 
 /****************************************************************************
  * Merge defaults with custom config
@@ -67,112 +65,38 @@ process.on('uncaughtException', disconnect);
 
 
 /****************************************************************************
- * Our functions
- */
-
-
-function PerformDiff(config) {
-  var successCB = null;
-  var errorCB = null;
-
-  imageDiff({
-    actualImage: config.outputPath + 'base.png',
-    expectedImage: config.outputPath + 'compare.png',
-    diffImage: config.outputPath + 'difference.png',
-  }, function (err, imagesAreSame) {
-    if (err & typeof errorCB === 'function') {
-      errorCB(err);
-    } else {
-      // error will be any errors that occurred
-      // imagesAreSame is a boolean whether the images were the same or not
-      // diffImage will have an image which highlights differences
-      if (typeof successCB === 'function') {
-        successCB(imagesAreSame);
-      }
-    }
-  });
-
-  var then = function(cb){
-    successCB = cb;
-  };
-
-  var catchFunc = function(cb){
-    errorCB = cb;
-  };
-
-  return {
-    then : then,
-    catch : catchFunc
-  };
-}
-
-
-function StartScreenshot(config){
-  var args = [];
-
-  var successCB = null;
-  var errorCB = null;
-
-  // add our phantomJS init script to the beginning of the arguments
-  args.push(process.cwd() + '/lib/capture.js');
-  args.push(JSON.stringify(config));
-
-  // launch PhantomJS with the modified arguments
-  var screenshots = spawn(binPath, args);
-
-  screenshots.stdout.on('data', function (data) {
-    console.log('stdout: ' + data);
-  });
-
-  screenshots.stderr.on('data', function (data) {
-    if (typeof errorCB === 'function') {
-      errorCB('stderr: ' + data);
-    }
-  });
-
-  screenshots.on('exit', function (code) {
-    console.log('child process exited with code ' + code);
-    if (typeof successCB === 'function') {
-      successCB(code);
-    }
-    
-  });
-
-  var then = function(cb){
-    successCB = cb;
-  };
-
-  var catchFunc = function(cb){
-    errorCB = cb;
-  };
-
-  return {
-    then : then,
-    catch : catchFunc
-  };
-}
-
-
-/****************************************************************************
  * Continual future capture
  */
 
 function setupInterval(config){
-   var doCompare = new StartScreenshot(config);
+   var doCompare = new main.StartScreenshot(config);
+   const diffImg = config.outputPath + '/difference.png';
 
    doCompare.then(function(){
-      var diff = new PerformDiff(config);
+      var diff = new main.PerformDiff(config);
       
       diff.then(function(imagesAreSame){
-        console.log('images are the same:', imagesAreSame);
-        // hook into notifications here
-        if (imagesAreSame) {
-          // no change notification
-          notify.slack("no changes detected on: "  + config.url);
-        } else {
-          // Changes detected!!
-          notify.all("@channel - changes detected on " + config.url);
+        console.log('images are the same?', imagesAreSame);
+
+        // if there's not change we just post to slack
+        if (imagesAreSame){
+          notify.slack("no changes detected on: "  + config.url, null);
+          main.rotateFiles(config);
+          return;
         }
+
+        // if there is a change, we post to slack, upload to imgur as well
+        notify.all("@channel - changes detected on " + config.url, null);
+
+        // I don't want imgur blocking the the first notification so we separate the calls
+        imgur.upload(diffImg)
+          .then(function (json) {
+            console.log(json.data.link);
+            notify.all(json.data.link, json.data.link);
+          })
+          .catch(function (err) {
+              console.error(err.message);
+          });
       });
 
       diff.catch(function(err){
@@ -191,7 +115,7 @@ function setupInterval(config){
 var saveFilename = config.filename;
 config.filename = "base";
 
-var doBase = new StartScreenshot(config);
+var doBase = new main.StartScreenshot(config);
 doBase.then(function(){
   console.log("base image captured");
   config.filename = saveFilename;
