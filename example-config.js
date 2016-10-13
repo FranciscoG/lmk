@@ -13,6 +13,6 @@ module.exports.slackConfig = {
 module.exports.twilioConfig = {
   'accountSid' : '',
   'authToken' : '',
-  'phone' : [''], // array of phone numbers
-  'twilioNumber' : '' // your Twilio Number
+  'phone' : '', //  phone number to text
+  'twilioNumber' : '' // your Twilio Number, where texts will come "from"
 };
