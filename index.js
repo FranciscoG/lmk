@@ -82,9 +82,8 @@ function setupInterval(config){
          *  This is where you would hook up your notifications
          */
 
-        // if there's not change we just post to slack
         if (imagesAreSame){
-          notify.slack("no changes detected on: "  + config.url, null);
+          // notify.slack("no changes detected on: "  + config.url, null);
           main.rotateFiles(config);
           return;
         }
