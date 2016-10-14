@@ -101,11 +101,12 @@ function setupInterval(config){
               console.error(err.message);
           });
 
-          /*
-           * End notification area block
-           ************************************************************************/
+        /*
+         * End notification area block
+         ************************************************************************/
 
-        main.rotateFiles(config);
+        // save backups of base only when there's a change
+        main.rotateFiles(config, true);
       });
 
       diff.catch(function(err){
