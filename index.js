@@ -15,7 +15,7 @@ var defaults = {
   height: 900,
   outputPath : process.cwd() + '/output/',
   filename : 'compare',
-  loadTime : 5000,
+  loadTime : 10000,
   interval : 600000,  // in MS,  default to every 10min
   clip : {
     left: 0,
@@ -89,7 +89,7 @@ function setupInterval(config){
         }
 
         // if there is a change, we post to slack, upload to imgur as well
-        notify.all("@channel - changes detected on " + config.url, null);
+        notify.all("Changes detected on " + config.url, null);
 
         // I don't want imgur blocking the the first notification so we separate the calls
         imgur.upload(diffImg)
