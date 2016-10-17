@@ -14,6 +14,7 @@
     "fs-extra": "^0.30.0",
     "image-diff": "^1.6.3",
     "imgur": "^0.1.7",
+    "moment": "^2.15.1",
     "phantomjs-prebuilt": "^2.1.13",
     "request": "^2.75.0",
     "superagent": "^2.3.0",
