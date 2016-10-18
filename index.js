@@ -19,9 +19,9 @@ var defaults = {
   interval : 600000,  // in MS,  default to every 10min
   clip : {
     left: 0,
-    top: 541,
-    width: 620,
-    height: 601
+    top: 231,
+    width: 626,
+    height: 910
   }
 };
 
